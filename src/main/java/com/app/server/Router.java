@@ -1,7 +1,6 @@
 package com.app.server;
 
 import com.app.response.ApiResponse;
-
 import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
@@ -11,8 +10,7 @@ import java.util.Map;
 
 public class Router {
 
-    private final List<Route> routes =
-            new ArrayList<>();
+    private final List<Route> routes = new ArrayList<>();
 
     public void get(
             String path,
@@ -47,7 +45,6 @@ public class Router {
             String path,
             RouteHandler handler
     ) {
-
         routes.add(
                 new Route(
                         method,
@@ -72,24 +69,24 @@ public class Router {
 
             Map<String, String> params =
                     match(
-                            route.getMethod(),
-                            route.getPath(),
+                            route,
                             method,
                             path
                     );
 
-            if (params != null) {
-
-                Request request =
-                        new Request(
-                                exchange,
-                                params
-                        );
-
-                return route
-                        .getHandler()
-                        .handle(request);
+            if (params == null) {
+                continue;
             }
+
+            Request request =
+                    new Request(
+                            exchange,
+                            params
+                    );
+
+            return route
+                    .getHandler()
+                    .handle(request);
         }
 
         return new ApiResponse<>(
@@ -101,21 +98,22 @@ public class Router {
     }
 
     private Map<String, String> match(
-            String routeMethod,
-            String routePath,
-            String requestMethod,
+            Route route,
+            String method,
             String requestPath
     ) {
 
-        if (!routeMethod.equals(requestMethod)) {
+        if (!route.getMethod()
+                .equals(method)) {
+
             return null;
         }
 
         String[] routeParts =
-                routePath.split("/");
+                splitPath(route.getPath());
 
         String[] requestParts =
-                requestPath.split("/");
+                splitPath(requestPath);
 
         if (routeParts.length
                 != requestParts.length) {
@@ -136,8 +134,7 @@ public class Router {
             String requestPart =
                     requestParts[i];
 
-            if (routePart.startsWith("{")
-                    && routePart.endsWith("}")) {
+            if (isParameter(routePart)) {
 
                 String paramName =
                         routePart.substring(
@@ -159,5 +156,25 @@ public class Router {
         }
 
         return params;
+    }
+
+    private String[] splitPath(
+            String path
+    ) {
+
+        if (path.equals("/")) {
+            return new String[0];
+        }
+
+        return path.substring(1)
+                .split("/");
+    }
+
+    private boolean isParameter(
+            String part
+    ) {
+
+        return part.startsWith("{")
+                && part.endsWith("}");
     }
 }

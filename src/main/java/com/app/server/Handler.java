@@ -1,7 +1,9 @@
 package com.app.server;
 
+import com.app.exception.ErrorHandler;
 import com.app.response.ApiResponse;
 import com.app.response.ResponseUtil;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -32,16 +34,9 @@ public class Handler implements HttpHandler {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
-
-            ResponseUtil.send(
+            ErrorHandler.handle(
                     exchange,
-                    new ApiResponse<>(
-                            false,
-                            500,
-                            "Internal server error",
-                            null
-                    )
+                    e
             );
         }
     }

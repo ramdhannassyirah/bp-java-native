@@ -1,7 +1,6 @@
 package com.app.server;
 
-import com.app.controller.HelloController;
-
+import com.app.controller.UserController;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -15,25 +14,41 @@ public class HttpServerApp {
 
         try {
 
-            Router router = new Router();
+            Router router =
+                    new Router();
 
-            HelloController helloController =
-                    new HelloController();
+            UserController userController =
+                    new UserController();
 
+            // USER ROUTES
 
-            // HELLO
             router.get(
-                    "/hello",
-                    helloController::getHello
+                    "/users",
+                    userController::findAll
+            );
+
+            router.get(
+                    "/users/{id}",
+                    userController::findById
             );
 
             router.post(
-                    "/hello",
-                    helloController::postHello
+                    "/users",
+                    userController::create
             );
 
+            router.put(
+                    "/users/{id}",
+                    userController::update
+            );
+
+            router.delete(
+                    "/users/{id}",
+                    userController::delete
+            );
 
             // SERVER
+
             server = HttpServer.create(
                     new InetSocketAddress(8080),
                     0

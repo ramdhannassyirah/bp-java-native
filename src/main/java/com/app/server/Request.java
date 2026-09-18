@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Request {
@@ -22,26 +26,33 @@ public class Request {
         this.params = params;
     }
 
-    public HttpExchange getExchange() {
-        return exchange;
-    }
+    // =========================
+    // HTTP
+    // =========================
 
-    public String getMethod() {
+    public String method() {
+
         return exchange.getRequestMethod();
     }
 
-    public String getPath() {
+    public String path() {
+
         return exchange.getRequestURI()
                 .getPath();
     }
 
-    public String getParam(String name) {
+    // =========================
+    // PATH PARAMETER
+    // =========================
+
+    public String param(String name) {
+
         return params.get(name);
     }
 
     public Long getId() {
 
-        String id = params.get("id");
+        String id = param("id");
 
         if (id == null) {
             return null;
@@ -50,8 +61,55 @@ public class Request {
         return Long.parseLong(id);
     }
 
-    public <T> T body(Class<T> type)
-            throws IOException {
+    // =========================
+    // QUERY PARAMETER
+    // =========================
+
+    public String query(String name) {
+
+        String query =
+                exchange.getRequestURI()
+                        .getRawQuery();
+
+        if (query == null) {
+            return null;
+        }
+
+        for (String parameter :
+                query.split("&")) {
+
+            String[] parts =
+                    parameter.split("=", 2);
+
+            String key =
+                    URLDecoder.decode(
+                            parts[0],
+                            StandardCharsets.UTF_8
+                    );
+
+            if (key.equals(name)) {
+
+                if (parts.length == 1) {
+                    return "";
+                }
+
+                return URLDecoder.decode(
+                        parts[1],
+                        StandardCharsets.UTF_8
+                );
+            }
+        }
+
+        return null;
+    }
+
+    // =========================
+    // JSON BODY
+    // =========================
+
+    public <T> T body(
+            Class<T> type
+    ) throws IOException {
 
         return objectMapper.readValue(
                 exchange.getRequestBody(),
