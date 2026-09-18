@@ -1,40 +1,34 @@
 package com.app.controller;
 
+import com.app.model.HelloResponse;
+import com.app.service.HelloService;
+
 public class HelloController {
 
-    public String getHello() {
+    private final HelloService helloService;
 
-        return """
-                {
-                    "message": "Hello from Controller"
-                }
-                """;
+    public HelloController() {
+
+        this.helloService = new HelloService();
     }
 
-    public String postHello() {
+    public HelloResponse getHello() {
 
-        return """
-                {
-                    "message": "POST Hello from Controller"
-                }
-                """;
+        return helloService.getHello();
     }
 
-    public String putHello() {
+    public HelloResponse postHello() {
 
-        return """
-                {
-                    "message": "PUT Hello from Controller"
-                }
-                """;
+        return helloService.postHello();
     }
 
-    public String deleteHello() {
+    public HelloResponse putHello() {
 
-        return """
-                {
-                    "message": "DELETE Hello from Controller"
-                }
-                """;
+        return helloService.putHello();
+    }
+
+    public HelloResponse deleteHello() {
+
+        return helloService.deleteHello();
     }
 }

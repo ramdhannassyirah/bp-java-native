@@ -1,6 +1,7 @@
 package com.app.server;
 
 import com.app.controller.HelloController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -10,10 +11,12 @@ import java.nio.charset.StandardCharsets;
 public class Handler implements HttpHandler {
 
     private final HelloController helloController;
+    private final ObjectMapper objectMapper;
 
     public Handler() {
 
         this.helloController = new HelloController();
+        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -22,7 +25,7 @@ public class Handler implements HttpHandler {
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
 
-        String response;
+        Object response;
 
         if (path.equals("/hello") && method.equals("GET")) {
 
@@ -48,12 +51,15 @@ public class Handler implements HttpHandler {
                     }
                     """;
 
-            sendResponse(exchange, 404, response);
+            sendResponse(exchange, 404, response.toString());
 
             return;
         }
 
-        sendResponse(exchange, 200, response);
+        String jsonResponse =
+                objectMapper.writeValueAsString(response);
+
+        sendResponse(exchange, 200, jsonResponse);
     }
 
     private void sendResponse(
