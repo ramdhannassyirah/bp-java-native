@@ -1,6 +1,7 @@
 package com.app.repository;
 
 import com.app.database.DatabaseConnection;
+import com.app.exception.DatabaseException;
 import com.app.model.User;
 
 import java.sql.Connection;
@@ -49,10 +50,10 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-            throw new RuntimeException(
-                    "Gagal mengambil data user",
-                    e
-            );
+                throw new DatabaseException(
+                "Gagal mengambil data user",
+                e
+        );
         }
 
         return users;
@@ -102,10 +103,10 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-            throw new RuntimeException(
-                    "Gagal mengambil data user",
-                    e
-            );
+                throw new DatabaseException(
+                "Gagal mengambil data user",
+                e
+        );
         }
 
         return Optional.empty();

@@ -2,6 +2,7 @@ package com.app.exception;
 
 import com.app.response.ApiResponse;
 import com.app.response.ResponseUtil;
+import com.app.exception.DatabaseException;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -28,6 +29,23 @@ public class ErrorHandler {
 
             return;
         }
+
+        if (exception instanceof DatabaseException) {
+
+                exception.printStackTrace();
+
+                ResponseUtil.send(
+                        exchange,
+                        new ApiResponse<>(
+                                false,
+                                500,
+                                "Terjadi kesalahan database",
+                                null
+                        )
+                );
+
+                return;
+                }
 
         if (exception instanceof NumberFormatException) {
 
