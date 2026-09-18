@@ -26,11 +26,11 @@ public class HttpServerApp {
                         router.get("/", homeController::index);
 
                         // USERS
-                        router.get("/users", userController::findAll);
-                        router.get("/users/{id}", userController::findById);
-                        router.post("/users", userController::create);
-                        router.put("/users/{id}", userController::update);
-                        router.delete("/users/{id}", userController::delete);
+                        router.get("api//users", userController::findAll);
+                        router.get("api//users/{id}", userController::findById);
+                        router.post("api//users", userController::create);
+                        router.put("api//users/{id}", userController::update);
+                        router.delete("api//users/{id}", userController::delete);
 
                         // SERVER
                         server = HttpServer.create(new InetSocketAddress(8080), 0);
