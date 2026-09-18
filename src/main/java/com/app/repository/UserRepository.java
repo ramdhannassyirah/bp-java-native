@@ -1,7 +1,5 @@
 package com.app.repository;
 
-import com.app.database.DatabaseConnection;
-import com.app.exception.DatabaseException;
 import com.app.model.User;
 
 import java.sql.Connection;
@@ -11,7 +9,105 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserRepository {
+public class UserRepository
+        extends BaseRepository {
+
+                // =========================
+                // COUNT
+                // =========================
+
+                public long count() {
+
+                String sql =
+                        "SELECT COUNT(*) FROM users";
+
+                try (
+                        Connection connection =
+                                getConnection();
+
+                        PreparedStatement statement =
+                                connection.prepareStatement(sql);
+
+                        ResultSet result =
+                                statement.executeQuery()
+                ) {
+
+                        if (result.next()) {
+
+                        return result.getLong(1);
+                        }
+
+                } catch (Exception e) {
+
+                        throw databaseError(
+                                "Gagal menghitung jumlah user",
+                                e
+                        );
+                }
+
+                return 0;
+                }
+
+        // =========================
+        // FIND ALL PAGINATION
+        // =========================
+
+        public List<User> findAll(
+                int page,
+                int limit
+        ) {
+
+        List<User> users =
+                new ArrayList<>();
+
+        int offset =
+                (page - 1) * limit;
+
+        String sql =
+                "SELECT id, name, email " +
+                "FROM users " +
+                "ORDER BY id " +
+                "LIMIT ? OFFSET ?";
+
+        try (
+                Connection connection =
+                        getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+                statement.setInt(1, limit);
+                statement.setInt(2, offset);
+
+                try (
+                        ResultSet result =
+                                statement.executeQuery()
+                ) {
+
+                while (result.next()) {
+
+                        User user =
+                                new User(
+                                        result.getLong("id"),
+                                        result.getString("name"),
+                                        result.getString("email")
+                                );
+
+                        users.add(user);
+                }
+                }
+
+        } catch (Exception e) {
+
+                throw databaseError(
+                        "Gagal mengambil data user",
+                        e
+                );
+        }
+
+        return users;
+        }
 
     // =========================
     // FIND ALL
@@ -27,7 +123,7 @@ public class UserRepository {
 
         try (
                 Connection connection =
-                        DatabaseConnection.getConnection();
+                        getConnection();
 
                 PreparedStatement statement =
                         connection.prepareStatement(sql);
@@ -50,10 +146,10 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-                throw new DatabaseException(
-                "Gagal mengambil data user",
-                e
-        );
+            throw databaseError(
+                    "Gagal mengambil data user",
+                    e
+            );
         }
 
         return users;
@@ -75,13 +171,17 @@ public class UserRepository {
 
         try (
                 Connection connection =
-                        DatabaseConnection.getConnection();
+                        getConnection();
 
                 PreparedStatement statement =
                         connection.prepareStatement(sql)
         ) {
 
-            statement.setLong(1, id);
+            setLong(
+                    statement,
+                    1,
+                    id
+            );
 
             try (
                     ResultSet result =
@@ -103,10 +203,10 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-                throw new DatabaseException(
-                "Gagal mengambil data user",
-                e
-        );
+            throw databaseError(
+                    "Gagal mengambil data user",
+                    e
+            );
         }
 
         return Optional.empty();
@@ -128,18 +228,20 @@ public class UserRepository {
 
         try (
                 Connection connection =
-                        DatabaseConnection.getConnection();
+                        getConnection();
 
                 PreparedStatement statement =
                         connection.prepareStatement(sql)
         ) {
 
-            statement.setString(
+            setString(
+                    statement,
                     1,
                     user.getName()
             );
 
-            statement.setString(
+            setString(
+                    statement,
                     2,
                     user.getEmail()
             );
@@ -159,7 +261,7 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-            throw new RuntimeException(
+            throw databaseError(
                     "Gagal membuat user",
                     e
             );
@@ -187,23 +289,26 @@ public class UserRepository {
 
         try (
                 Connection connection =
-                        DatabaseConnection.getConnection();
+                        getConnection();
 
                 PreparedStatement statement =
                         connection.prepareStatement(sql)
         ) {
 
-            statement.setString(
+            setString(
+                    statement,
                     1,
                     name
             );
 
-            statement.setString(
+            setString(
+                    statement,
                     2,
                     email
             );
 
-            statement.setLong(
+            setLong(
+                    statement,
                     3,
                     id
             );
@@ -225,7 +330,7 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-            throw new RuntimeException(
+            throw databaseError(
                     "Gagal memperbarui user",
                     e
             );
@@ -249,13 +354,14 @@ public class UserRepository {
 
         try (
                 Connection connection =
-                        DatabaseConnection.getConnection();
+                        getConnection();
 
                 PreparedStatement statement =
                         connection.prepareStatement(sql)
         ) {
 
-            statement.setLong(
+            setLong(
+                    statement,
                     1,
                     id
             );
@@ -267,7 +373,7 @@ public class UserRepository {
 
         } catch (Exception e) {
 
-            throw new RuntimeException(
+            throw databaseError(
                     "Gagal menghapus user",
                     e
             );

@@ -5,6 +5,7 @@ import com.app.model.UserRequest;
 import com.app.repository.UserRepository;
 import com.app.response.ApiResponse;
 import com.app.validation.UserValidator;
+import com.app.model.Pagination;
 
 import java.util.List;
 
@@ -21,6 +22,36 @@ public class UserService {
         userValidator =
                 new UserValidator();
     }
+
+    public ApiResponse<Pagination<User>> findAll(
+                int page,
+                int limit
+        ) {
+
+        List<User> users =
+                userRepository.findAll(
+                        page,
+                        limit
+                );
+
+        long total =
+                userRepository.count();
+
+        Pagination<User> pagination =
+                new Pagination<>(
+                        page,
+                        limit,
+                        total,
+                        users
+                );
+
+        return new ApiResponse<>(
+                true,
+                200,
+                "Berhasil mengambil data user",
+                pagination
+        );
+}
 
     // GET /users
     public ApiResponse<List<User>> findAll() {
