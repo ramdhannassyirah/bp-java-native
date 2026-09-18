@@ -1,66 +1,176 @@
 package com.app.repository;
 
+import com.app.database.DatabaseConnection;
 import com.app.model.User;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class UserRepository {
 
-    private final List<User> users;
-
-    private long nextId = 1;
-
-    public UserRepository() {
-
-        users = new ArrayList<>();
-
-        users.add(
-                new User(
-                        nextId++,
-                        "Ramdhan",
-                        "ramdhan@example.com"
-                )
-        );
-
-        users.add(
-                new User(
-                        nextId++,
-                        "Budi",
-                        "budi@example.com"
-                )
-        );
-    }
+    // =========================
+    // FIND ALL
+    // =========================
 
     public List<User> findAll() {
 
+        List<User> users =
+                new ArrayList<>();
+
+        String sql =
+                "SELECT id, name, email FROM users";
+
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql);
+
+                ResultSet result =
+                        statement.executeQuery()
+        ) {
+
+            while (result.next()) {
+
+                User user =
+                        new User(
+                                result.getLong("id"),
+                                result.getString("name"),
+                                result.getString("email")
+                        );
+
+                users.add(user);
+            }
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Gagal mengambil data user",
+                    e
+            );
+        }
+
         return users;
     }
+
+
+    // =========================
+    // FIND BY ID
+    // =========================
 
     public Optional<User> findById(
             Long id
     ) {
 
-        return users.stream()
-                .filter(
-                        user ->
-                                user.getId()
-                                        .equals(id)
-                )
-                .findFirst();
+        String sql =
+                "SELECT id, name, email " +
+                "FROM users " +
+                "WHERE id = ?";
+
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setLong(1, id);
+
+            try (
+                    ResultSet result =
+                            statement.executeQuery()
+            ) {
+
+                if (result.next()) {
+
+                    User user =
+                            new User(
+                                    result.getLong("id"),
+                                    result.getString("name"),
+                                    result.getString("email")
+                            );
+
+                    return Optional.of(user);
+                }
+            }
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Gagal mengambil data user",
+                    e
+            );
+        }
+
+        return Optional.empty();
     }
+
+
+    // =========================
+    // SAVE
+    // =========================
 
     public User save(
             User user
     ) {
 
-        user.setId(nextId++);
+        String sql =
+                "INSERT INTO users (name, email) " +
+                "VALUES (?, ?) " +
+                "RETURNING id";
 
-        users.add(user);
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(
+                    1,
+                    user.getName()
+            );
+
+            statement.setString(
+                    2,
+                    user.getEmail()
+            );
+
+            try (
+                    ResultSet result =
+                            statement.executeQuery()
+            ) {
+
+                if (result.next()) {
+
+                    user.setId(
+                            result.getLong("id")
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Gagal membuat user",
+                    e
+            );
+        }
 
         return user;
     }
+
+
+    // =========================
+    // UPDATE
+    // =========================
 
     public User update(
             Long id,
@@ -68,30 +178,98 @@ public class UserRepository {
             String email
     ) {
 
-        Optional<User> result =
-                findById(id);
+        String sql =
+                "UPDATE users " +
+                "SET name = ?, email = ? " +
+                "WHERE id = ? " +
+                "RETURNING id, name, email";
 
-        if (result.isEmpty()) {
-            return null;
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(
+                    1,
+                    name
+            );
+
+            statement.setString(
+                    2,
+                    email
+            );
+
+            statement.setLong(
+                    3,
+                    id
+            );
+
+            try (
+                    ResultSet result =
+                            statement.executeQuery()
+            ) {
+
+                if (result.next()) {
+
+                    return new User(
+                            result.getLong("id"),
+                            result.getString("name"),
+                            result.getString("email")
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Gagal memperbarui user",
+                    e
+            );
         }
 
-        User user =
-                result.get();
-
-        user.setName(name);
-        user.setEmail(email);
-
-        return user;
+        return null;
     }
+
+
+    // =========================
+    // DELETE
+    // =========================
 
     public boolean delete(
             Long id
     ) {
 
-        return users.removeIf(
-                user ->
-                        user.getId()
-                                .equals(id)
-        );
+        String sql =
+                "DELETE FROM users " +
+                "WHERE id = ?";
+
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setLong(
+                    1,
+                    id
+            );
+
+            int affectedRows =
+                    statement.executeUpdate();
+
+            return affectedRows > 0;
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Gagal menghapus user",
+                    e
+            );
+        }
     }
 }
