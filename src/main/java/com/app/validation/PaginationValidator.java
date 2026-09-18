@@ -8,28 +8,24 @@ public class PaginationValidator {
 
     public void validate(
             int page,
-            int limit
-    ) {
+            int limit) {
 
         if (page < 1) {
 
             throw new ValidationException(
-                    "Page minimal 1"
-            );
+                    "Page minimal 1");
         }
 
         if (limit < 1) {
 
             throw new ValidationException(
-                    "Limit minimal 1"
-            );
+                    "Limit minimal 1");
         }
 
         if (limit > MAX_LIMIT) {
 
             throw new ValidationException(
-                    "Limit maksimal " + MAX_LIMIT
-            );
+                    "Limit maksimal " + MAX_LIMIT);
         }
     }
 }

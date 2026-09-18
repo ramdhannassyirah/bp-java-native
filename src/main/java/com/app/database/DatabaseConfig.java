@@ -5,56 +5,40 @@ import java.util.Properties;
 
 public class DatabaseConfig {
 
-    private static final Properties properties =
-            new Properties();
+        private static final Properties properties = new Properties();
 
-    static {
+        static {
 
-        try (
-                InputStream input =
-                        DatabaseConfig.class
-                                .getClassLoader()
-                                .getResourceAsStream(
-                                        "application.properties"
-                                )
-        ) {
+                try (
+                                InputStream input = DatabaseConfig.class
+                                                .getClassLoader()
+                                                .getResourceAsStream("application.properties")) {
 
-            if (input == null) {
+                        if (input == null) {
 
-                throw new RuntimeException(
-                        "application.properties tidak ditemukan"
-                );
-            }
+                                throw new RuntimeException("application.properties tidak ditemukan");
+                        }
 
-            properties.load(input);
+                        properties.load(input);
 
-        } catch (Exception e) {
+                } catch (Exception e) {
 
-            throw new RuntimeException(
-                    "Gagal membaca konfigurasi database",
-                    e
-            );
+                        throw new RuntimeException("Gagal membaca konfigurasi database", e);
+                }
         }
-    }
 
-    public static String getUrl() {
+        public static String getUrl() {
 
-        return properties.getProperty(
-                "db.url"
-        );
-    }
+                return properties.getProperty("db.url");
+        }
 
-    public static String getUsername() {
+        public static String getUsername() {
 
-        return properties.getProperty(
-                "db.username"
-        );
-    }
+                return properties.getProperty("db.username");
+        }
 
-    public static String getPassword() {
+        public static String getPassword() {
 
-        return properties.getProperty(
-                "db.password"
-        );
-    }
+                return properties.getProperty("db.password");
+        }
 }

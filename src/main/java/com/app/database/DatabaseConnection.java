@@ -6,27 +6,20 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    public static Connection getConnection()
-            throws SQLException {
+    public static Connection getConnection() throws SQLException {
 
         try {
 
-            Class.forName(
-                    "org.postgresql.Driver"
-            );
+            Class.forName("org.postgresql.Driver");
 
         } catch (ClassNotFoundException e) {
 
-            throw new SQLException(
-                    "PostgreSQL JDBC Driver tidak ditemukan",
-                    e
-            );
+            throw new SQLException("PostgreSQL JDBC Driver tidak ditemukan", e);
         }
 
         return DriverManager.getConnection(
                 DatabaseConfig.getUrl(),
                 DatabaseConfig.getUsername(),
-                DatabaseConfig.getPassword()
-        );
+                DatabaseConfig.getPassword());
     }
 }

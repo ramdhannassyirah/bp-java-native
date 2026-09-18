@@ -6,30 +6,26 @@ import com.app.model.UserRequest;
 public class UserValidator {
 
     public void validate(
-            UserRequest request
-    ) {
+            UserRequest request) {
 
         if (request == null) {
 
             throw new ValidationException(
-                    "Request tidak boleh kosong"
-            );
+                    "Request tidak boleh kosong");
         }
 
         if (request.getName() == null
                 || request.getName().isBlank()) {
 
             throw new ValidationException(
-                    "Name wajib diisi"
-            );
+                    "Name wajib diisi");
         }
 
         if (request.getEmail() == null
                 || request.getEmail().isBlank()) {
 
             throw new ValidationException(
-                    "Email wajib diisi"
-            );
+                    "Email wajib diisi");
         }
     }
 }

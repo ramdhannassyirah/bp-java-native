@@ -11,8 +11,7 @@ public class ApiResponse<T> {
             boolean success,
             int status,
             String message,
-            T data
-    ) {
+            T data) {
         this.success = success;
         this.status = status;
         this.message = message;

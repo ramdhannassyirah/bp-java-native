@@ -19,25 +19,17 @@ public class Handler implements HttpHandler {
 
     @Override
     public void handle(
-            HttpExchange exchange
-    ) throws IOException {
+            HttpExchange exchange) throws IOException {
 
         try {
 
-            ApiResponse<?> response =
-                    router.handle(exchange);
+            ApiResponse<?> response = router.handle(exchange);
 
-            ResponseUtil.send(
-                    exchange,
-                    response
-            );
+            ResponseUtil.send(exchange, response);
 
         } catch (Exception e) {
 
-            ErrorHandler.handle(
-                    exchange,
-                    e
-            );
+            ErrorHandler.handle(exchange, e);
         }
     }
 }

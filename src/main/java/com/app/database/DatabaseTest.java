@@ -8,12 +8,9 @@ public class DatabaseTest {
 
         try {
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
+            Connection connection = DatabaseConnection.getConnection();
 
-            System.out.println(
-                    "Database berhasil terhubung!"
-            );
+            System.out.println("Database berhasil terhubung!");
 
             connection.close();
 

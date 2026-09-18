@@ -5,7 +5,5 @@ import com.app.response.ApiResponse;
 @FunctionalInterface
 public interface RouteHandler {
 
-    ApiResponse<?> handle(
-            Request request
-    ) throws Exception;
+    ApiResponse<?> handle(Request request) throws Exception;
 }

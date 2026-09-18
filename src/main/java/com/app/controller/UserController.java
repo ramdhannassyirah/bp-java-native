@@ -8,108 +8,66 @@ import com.app.server.Request;
 import com.app.service.UserService;
 import com.app.validation.PaginationValidator;
 
-import java.util.List;
-
 public class UserController {
 
-    private final UserService userService;
-    private final PaginationValidator paginationValidator;
+        private final UserService userService;
+        private final PaginationValidator paginationValidator;
 
-    public UserController() {
-
-        userService =
-                new UserService();
-
-         paginationValidator =
-            new PaginationValidator();
-    }
-
-   public ApiResponse<Pagination<User>> findAll(
-                Request request
-        ) {
-
-        String pageParam =
-                request.query("page");
-
-        String limitParam =
-                request.query("limit");
-
-        int page = 1;
-        int limit = 10;
-
-        if (pageParam != null) {
-
-                page =
-                        Integer.parseInt(pageParam);
+        public UserController() {
+                userService = new UserService();
+                paginationValidator = new PaginationValidator();
         }
 
-        if (limitParam != null) {
+        public ApiResponse<Pagination<User>> findAll(Request request) {
 
-                limit =
-                        Integer.parseInt(limitParam);
+                String pageParam = request.query("page");
+                String limitParam = request.query("limit");
+
+                int page = 1;
+                int limit = 10;
+
+                if (pageParam != null) {
+
+                        page = Integer.parseInt(pageParam);
+                }
+
+                if (limitParam != null) {
+
+                        limit = Integer.parseInt(limitParam);
+                }
+
+                paginationValidator.validate(page, limit);
+
+                return userService.findAll(page, limit);
         }
 
-        paginationValidator.validate(
-                page,
-                limit
-        );
+        public ApiResponse<User> findById(Request request) {
 
-        return userService.findAll(
-                page,
-                limit
-        );
+                Long id = Long.parseLong(request.param("id"));
+
+                return userService.findById(id);
         }
-        
-    public ApiResponse<User> findById(
-            Request request
-    ) {
 
-        Long id = Long.parseLong(
-                request.param("id")
-        );
+        public ApiResponse<User> create(Request request) throws Exception {
 
-        return userService.findById(id);
-    }
+                UserRequest body = request.body(UserRequest.class);
 
-    public ApiResponse<User> create(
-            Request request
-    ) throws Exception {
+                return userService.create(body);
+        }
 
-        UserRequest body =
-                request.body(
-                        UserRequest.class
-                );
+        public ApiResponse<User> update(Request request) throws Exception {
 
-        return userService.create(body);
-    }
+                Long id = Long.parseLong(request.param("id"));
 
-    public ApiResponse<User> update(
-            Request request
-    ) throws Exception {
+                UserRequest body = request.body(UserRequest.class);
 
-        Long id = Long.parseLong(
-                request.param("id")
-        );
+                return userService.update(id, body);
+        }
 
-        UserRequest body =
-                request.body(
-                        UserRequest.class
-                );
+        public ApiResponse<Void> delete(Request request) {
 
-        return userService.update(
-                id,
-                body
-        );
-    }
+                Long id = Long.parseLong(request.param("id"));
 
-    public ApiResponse<Void> delete(
-            Request request
-    ) {
-
-        Long id = Long.parseLong(
-                request.param("id")
-        );
-
-        return userService.delete(id);
-    }
+                return userService.delete(id);
+        }
 }

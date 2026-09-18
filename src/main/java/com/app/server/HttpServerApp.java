@@ -1,6 +1,9 @@
 package com.app.server;
 
+// CONTROLLER
 import com.app.controller.UserController;
+import com.app.controller.HomeController;
+
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -8,66 +11,37 @@ import java.net.InetSocketAddress;
 
 public class HttpServerApp {
 
-    private HttpServer server;
+        private HttpServer server;
 
-    public void start() {
+        public void start() {
 
-        try {
+                try {
 
-            Router router =
-                    new Router();
+                        Router router = new Router();
 
-            UserController userController =
-                    new UserController();
+                        UserController userController = new UserController();
+                        HomeController homeController = new HomeController();
 
-            // USER ROUTES
+                        // ROUTES
+                        router.get("/", homeController::index);
 
-            router.get(
-                    "/users",
-                    userController::findAll
-            );
+                        // USERS
+                        router.get("/users", userController::findAll);
+                        router.get("/users/{id}", userController::findById);
+                        router.post("/users", userController::create);
+                        router.put("/users/{id}", userController::update);
+                        router.delete("/users/{id}", userController::delete);
 
-            router.get(
-                    "/users/{id}",
-                    userController::findById
-            );
+                        // SERVER
+                        server = HttpServer.create(new InetSocketAddress(8080), 0);
+                        server.createContext("/", new Handler(router));
+                        server.start();
 
-            router.post(
-                    "/users",
-                    userController::create
-            );
+                        System.out.println("Server running on http://localhost:8080");
 
-            router.put(
-                    "/users/{id}",
-                    userController::update
-            );
+                } catch (IOException e) {
 
-            router.delete(
-                    "/users/{id}",
-                    userController::delete
-            );
-
-            // SERVER
-
-            server = HttpServer.create(
-                    new InetSocketAddress(8080),
-                    0
-            );
-
-            server.createContext(
-                    "/",
-                    new Handler(router)
-            );
-
-            server.start();
-
-            System.out.println(
-                    "Server running on http://localhost:8080"
-            );
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
+                        e.printStackTrace();
+                }
         }
-    }
 }

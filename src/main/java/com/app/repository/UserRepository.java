@@ -10,373 +10,299 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserRepository
-        extends BaseRepository {
+                extends BaseRepository {
 
-                // =========================
-                // COUNT
-                // =========================
+        // =========================
+        // COUNT
+        // =========================
 
-                public long count() {
+        public long count() {
 
-                String sql =
-                        "SELECT COUNT(*) FROM users";
+                String sql = "SELECT COUNT(*) FROM users";
 
                 try (
-                        Connection connection =
-                                getConnection();
+                                Connection connection = getConnection();
 
-                        PreparedStatement statement =
-                                connection.prepareStatement(sql);
+                                PreparedStatement statement = connection.prepareStatement(sql);
 
-                        ResultSet result =
-                                statement.executeQuery()
-                ) {
+                                ResultSet result = statement.executeQuery()) {
 
                         if (result.next()) {
 
-                        return result.getLong(1);
+                                return result.getLong(1);
                         }
 
                 } catch (Exception e) {
 
                         throw databaseError(
-                                "Gagal menghitung jumlah user",
-                                e
-                        );
+                                        "Gagal menghitung jumlah user", e);
                 }
 
                 return 0;
-                }
+        }
 
         // =========================
         // FIND ALL PAGINATION
         // =========================
 
         public List<User> findAll(
-                int page,
-                int limit
-        ) {
+                        int page,
+                        int limit) {
 
-        List<User> users =
-                new ArrayList<>();
+                List<User> users = new ArrayList<>();
 
-        int offset =
-                (page - 1) * limit;
+                int offset = (page - 1) * limit;
 
-        String sql =
-                "SELECT id, name, email " +
-                "FROM users " +
-                "ORDER BY id " +
-                "LIMIT ? OFFSET ?";
-
-        try (
-                Connection connection =
-                        getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
-
-                statement.setInt(1, limit);
-                statement.setInt(2, offset);
+                String sql = "SELECT id, name, email " +
+                                "FROM users " +
+                                "ORDER BY id " +
+                                "LIMIT ? OFFSET ?";
 
                 try (
-                        ResultSet result =
-                                statement.executeQuery()
-                ) {
+                                Connection connection = getConnection();
 
-                while (result.next()) {
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
 
-                        User user =
-                                new User(
-                                        result.getLong("id"),
-                                        result.getString("name"),
-                                        result.getString("email")
-                                );
+                        statement.setInt(1, limit);
+                        statement.setInt(2, offset);
 
-                        users.add(user);
+                        try (
+                                        ResultSet result = statement.executeQuery()) {
+
+                                while (result.next()) {
+
+                                        User user = new User(
+                                                        result.getLong("id"),
+                                                        result.getString("name"),
+                                                        result.getString("email"));
+
+                                        users.add(user);
+                                }
+                        }
+
+                } catch (Exception e) {
+
+                        throw databaseError(
+                                        "Gagal mengambil data user",
+                                        e);
                 }
+
+                return users;
+        }
+
+        // =========================
+        // FIND ALL
+        // =========================
+
+        public List<User> findAll() {
+
+                List<User> users = new ArrayList<>();
+
+                String sql = "SELECT id, name, email FROM users";
+
+                try (
+                                Connection connection = getConnection();
+
+                                PreparedStatement statement = connection.prepareStatement(sql);
+
+                                ResultSet result = statement.executeQuery()) {
+
+                        while (result.next()) {
+
+                                User user = new User(
+                                                result.getLong("id"),
+                                                result.getString("name"),
+                                                result.getString("email"));
+
+                                users.add(user);
+                        }
+
+                } catch (Exception e) {
+
+                        throw databaseError(
+                                        "Gagal mengambil data user",
+                                        e);
                 }
 
-        } catch (Exception e) {
-
-                throw databaseError(
-                        "Gagal mengambil data user",
-                        e
-                );
+                return users;
         }
 
-        return users;
-        }
+        // =========================
+        // FIND BY ID
+        // =========================
 
-    // =========================
-    // FIND ALL
-    // =========================
+        public Optional<User> findById(
+                        Long id) {
 
-    public List<User> findAll() {
+                String sql = "SELECT id, name, email " +
+                                "FROM users " +
+                                "WHERE id = ?";
 
-        List<User> users =
-                new ArrayList<>();
+                try (
+                                Connection connection = getConnection();
 
-        String sql =
-                "SELECT id, name, email FROM users";
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
 
-        try (
-                Connection connection =
-                        getConnection();
+                        setLong(
+                                        statement,
+                                        1,
+                                        id);
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql);
+                        try (
+                                        ResultSet result = statement.executeQuery()) {
 
-                ResultSet result =
-                        statement.executeQuery()
-        ) {
+                                if (result.next()) {
 
-            while (result.next()) {
+                                        User user = new User(
+                                                        result.getLong("id"),
+                                                        result.getString("name"),
+                                                        result.getString("email"));
 
-                User user =
-                        new User(
-                                result.getLong("id"),
-                                result.getString("name"),
-                                result.getString("email")
-                        );
+                                        return Optional.of(user);
+                                }
+                        }
 
-                users.add(user);
-            }
+                } catch (Exception e) {
 
-        } catch (Exception e) {
-
-            throw databaseError(
-                    "Gagal mengambil data user",
-                    e
-            );
-        }
-
-        return users;
-    }
-
-
-    // =========================
-    // FIND BY ID
-    // =========================
-
-    public Optional<User> findById(
-            Long id
-    ) {
-
-        String sql =
-                "SELECT id, name, email " +
-                "FROM users " +
-                "WHERE id = ?";
-
-        try (
-                Connection connection =
-                        getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
-
-            setLong(
-                    statement,
-                    1,
-                    id
-            );
-
-            try (
-                    ResultSet result =
-                            statement.executeQuery()
-            ) {
-
-                if (result.next()) {
-
-                    User user =
-                            new User(
-                                    result.getLong("id"),
-                                    result.getString("name"),
-                                    result.getString("email")
-                            );
-
-                    return Optional.of(user);
+                        throw databaseError(
+                                        "Gagal mengambil data user",
+                                        e);
                 }
-            }
 
-        } catch (Exception e) {
-
-            throw databaseError(
-                    "Gagal mengambil data user",
-                    e
-            );
+                return Optional.empty();
         }
 
-        return Optional.empty();
-    }
+        // =========================
+        // SAVE
+        // =========================
 
+        public User save(
+                        User user) {
 
-    // =========================
-    // SAVE
-    // =========================
+                String sql = "INSERT INTO users (name, email) " +
+                                "VALUES (?, ?) " +
+                                "RETURNING id";
 
-    public User save(
-            User user
-    ) {
+                try (
+                                Connection connection = getConnection();
 
-        String sql =
-                "INSERT INTO users (name, email) " +
-                "VALUES (?, ?) " +
-                "RETURNING id";
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
 
-        try (
-                Connection connection =
-                        getConnection();
+                        setString(
+                                        statement,
+                                        1,
+                                        user.getName());
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+                        setString(
+                                        statement,
+                                        2,
+                                        user.getEmail());
 
-            setString(
-                    statement,
-                    1,
-                    user.getName()
-            );
+                        try (
+                                        ResultSet result = statement.executeQuery()) {
 
-            setString(
-                    statement,
-                    2,
-                    user.getEmail()
-            );
+                                if (result.next()) {
 
-            try (
-                    ResultSet result =
-                            statement.executeQuery()
-            ) {
+                                        user.setId(
+                                                        result.getLong("id"));
+                                }
+                        }
 
-                if (result.next()) {
+                } catch (Exception e) {
 
-                    user.setId(
-                            result.getLong("id")
-                    );
+                        throw databaseError(
+                                        "Gagal membuat user",
+                                        e);
                 }
-            }
 
-        } catch (Exception e) {
-
-            throw databaseError(
-                    "Gagal membuat user",
-                    e
-            );
+                return user;
         }
 
-        return user;
-    }
+        // =========================
+        // UPDATE
+        // =========================
 
+        public User update(
+                        Long id,
+                        String name,
+                        String email) {
 
-    // =========================
-    // UPDATE
-    // =========================
+                String sql = "UPDATE users " +
+                                "SET name = ?, email = ? " +
+                                "WHERE id = ? " +
+                                "RETURNING id, name, email";
 
-    public User update(
-            Long id,
-            String name,
-            String email
-    ) {
+                try (
+                                Connection connection = getConnection();
 
-        String sql =
-                "UPDATE users " +
-                "SET name = ?, email = ? " +
-                "WHERE id = ? " +
-                "RETURNING id, name, email";
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
 
-        try (
-                Connection connection =
-                        getConnection();
+                        setString(
+                                        statement,
+                                        1,
+                                        name);
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+                        setString(
+                                        statement,
+                                        2,
+                                        email);
 
-            setString(
-                    statement,
-                    1,
-                    name
-            );
+                        setLong(
+                                        statement,
+                                        3,
+                                        id);
 
-            setString(
-                    statement,
-                    2,
-                    email
-            );
+                        try (
+                                        ResultSet result = statement.executeQuery()) {
 
-            setLong(
-                    statement,
-                    3,
-                    id
-            );
+                                if (result.next()) {
 
-            try (
-                    ResultSet result =
-                            statement.executeQuery()
-            ) {
+                                        return new User(
+                                                        result.getLong("id"),
+                                                        result.getString("name"),
+                                                        result.getString("email"));
+                                }
+                        }
 
-                if (result.next()) {
+                } catch (Exception e) {
 
-                    return new User(
-                            result.getLong("id"),
-                            result.getString("name"),
-                            result.getString("email")
-                    );
+                        throw databaseError(
+                                        "Gagal memperbarui user",
+                                        e);
                 }
-            }
 
-        } catch (Exception e) {
-
-            throw databaseError(
-                    "Gagal memperbarui user",
-                    e
-            );
+                return null;
         }
 
-        return null;
-    }
+        // =========================
+        // DELETE
+        // =========================
 
+        public boolean delete(
+                        Long id) {
 
-    // =========================
-    // DELETE
-    // =========================
+                String sql = "DELETE FROM users " +
+                                "WHERE id = ?";
 
-    public boolean delete(
-            Long id
-    ) {
+                try (
+                                Connection connection = getConnection();
 
-        String sql =
-                "DELETE FROM users " +
-                "WHERE id = ?";
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
 
-        try (
-                Connection connection =
-                        getConnection();
+                        setLong(
+                                        statement,
+                                        1,
+                                        id);
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+                        int affectedRows = statement.executeUpdate();
 
-            setLong(
-                    statement,
-                    1,
-                    id
-            );
+                        return affectedRows > 0;
 
-            int affectedRows =
-                    statement.executeUpdate();
+                } catch (Exception e) {
 
-            return affectedRows > 0;
-
-        } catch (Exception e) {
-
-            throw databaseError(
-                    "Gagal menghapus user",
-                    e
-            );
+                        throw databaseError(
+                                        "Gagal menghapus user",
+                                        e);
+                }
         }
-    }
 }
