@@ -1,9 +1,9 @@
 package com.app.controller;
 
-import com.app.exception.ValidationException;
 import com.app.model.HelloRequest;
 import com.app.model.HelloResponse;
 import com.app.response.ApiResponse;
+import com.app.server.Request;
 import com.app.service.HelloService;
 import com.app.validation.HelloValidator;
 
@@ -14,31 +14,31 @@ public class HelloController {
 
     public HelloController() {
 
-        this.helloService = new HelloService();
-        this.helloValidator = new HelloValidator();
+        this.helloService =
+                new HelloService();
+
+        this.helloValidator =
+                new HelloValidator();
     }
 
-    public ApiResponse<HelloResponse> getHello() {
+    public ApiResponse<HelloResponse> getHello(
+            Request request
+    ) {
 
         return helloService.getHello();
     }
 
     public ApiResponse<HelloResponse> postHello(
-            HelloRequest request
-    ) {
+            Request request
+    ) throws Exception {
 
-        helloValidator.validate(request);
+        HelloRequest body =
+                request.body(
+                        HelloRequest.class
+                );
 
-        return helloService.postHello(request);
-    }
+        helloValidator.validate(body);
 
-    public ApiResponse<HelloResponse> putHello() {
-
-        return helloService.putHello();
-    }
-
-    public ApiResponse<HelloResponse> deleteHello() {
-
-        return helloService.deleteHello();
+        return helloService.postHello(body);
     }
 }
