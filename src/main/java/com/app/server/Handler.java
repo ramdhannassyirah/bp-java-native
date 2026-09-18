@@ -1,6 +1,7 @@
 package com.app.server;
 
 import com.app.controller.HelloController;
+import com.app.exception.ValidationException;
 import com.app.model.HelloRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
@@ -23,6 +24,34 @@ public class Handler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+
+        try {
+
+            handleRequest(exchange);
+
+        } catch (ValidationException e) {
+
+            sendError(
+                    exchange,
+                    400,
+                    e.getMessage()
+            );
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            sendError(
+                    exchange,
+                    500,
+                    "Internal server error"
+            );
+        }
+    }
+
+    private void handleRequest(
+            HttpExchange exchange
+    ) throws IOException {
 
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
@@ -50,15 +79,11 @@ public class Handler implements HttpHandler {
 
         } else {
 
-            String errorResponse = """
-                    {
-                        "success": false,
-                        "message": "Route not found",
-                        "data": null
-                    }
-                    """;
-
-            sendResponse(exchange, 404, errorResponse);
+            sendError(
+                    exchange,
+                    404,
+                    "Route not found"
+            );
 
             return;
         }
@@ -66,9 +91,13 @@ public class Handler implements HttpHandler {
         String jsonResponse =
                 objectMapper.writeValueAsString(response);
 
-        sendResponse(exchange, 200, jsonResponse);
+        sendResponse(
+                exchange,
+                200,
+                jsonResponse
+        );
     }
-    
+
     private HelloRequest readRequestBody(
             HttpExchange exchange
     ) throws IOException {
@@ -88,6 +117,27 @@ public class Handler implements HttpHandler {
         );
     }
 
+    private void sendError(
+            HttpExchange exchange,
+            int statusCode,
+            String message
+    ) throws IOException {
+
+        String response = """
+                {
+                    "success": false,
+                    "message": "%s",
+                    "data": null
+                }
+                """.formatted(message);
+
+        sendResponse(
+                exchange,
+                statusCode,
+                response
+        );
+    }
+
     private void sendResponse(
             HttpExchange exchange,
             int statusCode,
@@ -98,7 +148,10 @@ public class Handler implements HttpHandler {
                 response.getBytes(StandardCharsets.UTF_8);
 
         exchange.getResponseHeaders()
-                .set("Content-Type", "application/json");
+                .set(
+                        "Content-Type",
+                        "application/json"
+                );
 
         exchange.sendResponseHeaders(
                 statusCode,

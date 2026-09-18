@@ -1,7 +1,9 @@
 com/app/App.class
 com/app/response/ApiResponse.class
 com/app/server/HttpServerApp.class
+com/app/exception/ValidationException.class
 com/app/service/HelloService.class
+com/app/validation/HelloValidator.class
 com/app/model/HelloRequest.class
 com/app/model/HelloResponse.class
 com/app/controller/HelloController.class
