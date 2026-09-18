@@ -1,6 +1,7 @@
 package com.app.controller;
 
 import com.app.model.HelloResponse;
+import com.app.response.ApiResponse;
 import com.app.service.HelloService;
 
 public class HelloController {
@@ -12,22 +13,22 @@ public class HelloController {
         this.helloService = new HelloService();
     }
 
-    public HelloResponse getHello() {
+    public ApiResponse<HelloResponse> getHello() {
 
         return helloService.getHello();
     }
 
-    public HelloResponse postHello() {
+    public ApiResponse<HelloResponse> postHello() {
 
         return helloService.postHello();
     }
 
-    public HelloResponse putHello() {
+    public ApiResponse<HelloResponse> putHello() {
 
         return helloService.putHello();
     }
 
-    public HelloResponse deleteHello() {
+    public ApiResponse<HelloResponse> deleteHello() {
 
         return helloService.deleteHello();
     }

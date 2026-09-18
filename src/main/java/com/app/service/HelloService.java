@@ -1,34 +1,63 @@
 package com.app.service;
 
 import com.app.model.HelloResponse;
+import com.app.response.ApiResponse;
 
 public class HelloService {
 
-    public HelloResponse getHello() {
+    public ApiResponse<HelloResponse> getHello() {
 
-        return new HelloResponse(
-                "Hello from Service"
+        HelloResponse data =
+                new HelloResponse(
+                        "Hello from Service"
+                );
+
+        return new ApiResponse<>(
+                true,
+                "Berhasil mengambil data",
+                data
         );
     }
 
-    public HelloResponse postHello() {
+    public ApiResponse<HelloResponse> postHello() {
 
-        return new HelloResponse(
-                "POST Hello from Service"
+        HelloResponse data =
+                new HelloResponse(
+                        "POST Hello from Service"
+                );
+
+        return new ApiResponse<>(
+                true,
+                "Berhasil melakukan POST",
+                data
         );
     }
 
-    public HelloResponse putHello() {
+    public ApiResponse<HelloResponse> putHello() {
 
-        return new HelloResponse(
-                "PUT Hello from Service"
+        HelloResponse data =
+                new HelloResponse(
+                        "PUT Hello from Service"
+                );
+
+        return new ApiResponse<>(
+                true,
+                "Berhasil melakukan PUT",
+                data
         );
     }
 
-    public HelloResponse deleteHello() {
+    public ApiResponse<HelloResponse> deleteHello() {
 
-        return new HelloResponse(
-                "DELETE Hello from Service"
+        HelloResponse data =
+                new HelloResponse(
+                        "DELETE Hello from Service"
+                );
+
+        return new ApiResponse<>(
+                true,
+                "Berhasil melakukan DELETE",
+                data
         );
     }
 }
