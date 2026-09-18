@@ -14,10 +14,6 @@ public class HomeController {
                 "version", "1.0.0",
                 "status", "running");
 
-        return new ApiResponse<>(
-                true,
-                200,
-                "API berhasil dijalankan",
-                data);
+        return new ApiResponse<>(true, 200, "API berhasil dijalankan", data);
     }
 }

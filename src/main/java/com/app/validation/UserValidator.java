@@ -10,22 +10,17 @@ public class UserValidator {
 
         if (request == null) {
 
-            throw new ValidationException(
-                    "Request tidak boleh kosong");
+            throw new ValidationException("Request tidak boleh kosong");
         }
 
-        if (request.getName() == null
-                || request.getName().isBlank()) {
+        if (request.getName() == null || request.getName().isBlank()) {
 
-            throw new ValidationException(
-                    "Name wajib diisi");
+            throw new ValidationException("Name wajib diisi");
         }
 
-        if (request.getEmail() == null
-                || request.getEmail().isBlank()) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
 
-            throw new ValidationException(
-                    "Email wajib diisi");
+            throw new ValidationException("Email wajib diisi");
         }
     }
 }

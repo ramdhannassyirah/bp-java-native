@@ -33,8 +33,7 @@ public class Request {
 
     public String path() {
 
-        return exchange.getRequestURI()
-                .getPath();
+        return exchange.getRequestURI().getPath();
     }
 
     // =========================
@@ -63,8 +62,7 @@ public class Request {
 
     public String query(String name) {
 
-        String query = exchange.getRequestURI()
-                .getRawQuery();
+        String query = exchange.getRequestURI().getRawQuery();
 
         if (query == null) {
             return null;
@@ -74,9 +72,7 @@ public class Request {
 
             String[] parts = parameter.split("=", 2);
 
-            String key = URLDecoder.decode(
-                    parts[0],
-                    StandardCharsets.UTF_8);
+            String key = URLDecoder.decode(parts[0], StandardCharsets.UTF_8);
 
             if (key.equals(name)) {
 
@@ -84,9 +80,7 @@ public class Request {
                     return "";
                 }
 
-                return URLDecoder.decode(
-                        parts[1],
-                        StandardCharsets.UTF_8);
+                return URLDecoder.decode(parts[1], StandardCharsets.UTF_8);
             }
         }
 
@@ -100,8 +94,6 @@ public class Request {
     public <T> T body(
             Class<T> type) throws IOException {
 
-        return objectMapper.readValue(
-                exchange.getRequestBody(),
-                type);
+        return objectMapper.readValue(exchange.getRequestBody(), type);
     }
 }

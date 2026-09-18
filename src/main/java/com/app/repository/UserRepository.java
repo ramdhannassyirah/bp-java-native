@@ -9,8 +9,101 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserRepository
-                extends BaseRepository {
+public class UserRepository extends BaseRepository {
+
+        // =========================
+        // COUNT SEARCH
+        // =========================
+
+        public long countSearch(
+                        String keyword) {
+
+                String sql = "SELECT COUNT(*) " +
+                                "FROM users " +
+                                "WHERE name ILIKE ? " +
+                                "   OR email ILIKE ?";
+
+                try (
+                                Connection connection = getConnection();
+
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                        String searchKeyword = "%" + keyword + "%";
+
+                        setString(statement, 1, searchKeyword);
+
+                        setString(statement, 2, searchKeyword);
+
+                        try (
+                                        ResultSet result = statement.executeQuery()) {
+
+                                if (result.next()) {
+
+                                        return result.getLong(1);
+                                }
+                        }
+
+                } catch (Exception e) {
+
+                        throw databaseError("Gagal menghitung hasil pencarian user", e);
+                }
+
+                return 0;
+        }
+
+        // =========================
+        // SEARCH
+        // =========================
+
+        public List<User> search(String keyword, int page, int limit) {
+
+                List<User> users = new ArrayList<>();
+
+                int offset = (page - 1) * limit;
+
+                String sql = "SELECT id, name, email " +
+                                "FROM users " +
+                                "WHERE name ILIKE ? " +
+                                "   OR email ILIKE ? " +
+                                "ORDER BY id " +
+                                "LIMIT ? OFFSET ?";
+
+                try (
+                                Connection connection = getConnection();
+
+                                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                        String searchKeyword = "%" + keyword + "%";
+
+                        setString(statement, 1, searchKeyword);
+
+                        setString(statement, 2, searchKeyword);
+
+                        statement.setInt(3, limit);
+
+                        statement.setInt(4, offset);
+
+                        try (
+                                        ResultSet result = statement.executeQuery()) {
+
+                                while (result.next()) {
+
+                                        User user = new User(
+                                                        result.getLong("id"),
+                                                        result.getString("name"),
+                                                        result.getString("email"));
+
+                                        users.add(user);
+                                }
+                        }
+
+                } catch (Exception e) {
+
+                        throw databaseError("Gagal mencari data user", e);
+                }
+
+                return users;
+        }
 
         // =========================
         // COUNT

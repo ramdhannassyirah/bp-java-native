@@ -21,27 +21,26 @@ public class UserService {
                 userValidator = new UserValidator();
         }
 
-        public ApiResponse<Pagination<User>> findAll(
-                        int page,
-                        int limit) {
+        public ApiResponse<Pagination<User>> findAll(int page, int limit) {
 
-                List<User> users = userRepository.findAll(
-                                page,
-                                limit);
+                List<User> users = userRepository.findAll(page, limit);
 
                 long total = userRepository.count();
 
-                Pagination<User> pagination = new Pagination<>(
-                                page,
-                                limit,
-                                total,
-                                users);
+                Pagination<User> pagination = new Pagination<>(page, limit, total, users);
 
-                return new ApiResponse<>(
-                                true,
-                                200,
-                                "Berhasil mengambil data user",
-                                pagination);
+                return new ApiResponse<>(true, 200, "Berhasil mengambil data user", pagination);
+        }
+
+        public ApiResponse<Pagination<User>> search(String keyword, int page, int limit) {
+
+                List<User> users = userRepository.search(keyword, page, limit);
+
+                long total = userRepository.countSearch(keyword);
+
+                Pagination<User> pagination = new Pagination<>(page, limit, total, users);
+
+                return new ApiResponse<>(true, 200, "Berhasil mencari data user", pagination);
         }
 
         // GET /users
@@ -49,100 +48,55 @@ public class UserService {
 
                 List<User> users = userRepository.findAll();
 
-                return new ApiResponse<>(
-                                true,
-                                200,
-                                "Berhasil mengambil data user",
-                                users);
+                return new ApiResponse<>(true, 200, "Berhasil mengambil data user", users);
         }
 
         // GET /users/{id}
-        public ApiResponse<User> findById(
-                        Long id) {
+        public ApiResponse<User> findById(Long id) {
 
                 return userRepository
                                 .findById(id)
-                                .map(
-                                                user -> new ApiResponse<>(
-                                                                true,
-                                                                200,
-                                                                "Berhasil mengambil data user",
-                                                                user))
-                                .orElseGet(
-                                                () -> new ApiResponse<>(
-                                                                false,
-                                                                404,
-                                                                "User tidak ditemukan",
-                                                                null));
+                                .map(user -> new ApiResponse<>(true, 200, "Berhasil mengambil data user", user))
+                                .orElseGet(() -> new ApiResponse<>(false, 404, "User tidak ditemukan", null));
         }
 
         // POST /users
-        public ApiResponse<User> create(
-                        UserRequest request) {
+        public ApiResponse<User> create(UserRequest request) {
 
                 userValidator.validate(request);
 
-                User user = new User(
-                                null,
-                                request.getName(),
-                                request.getEmail());
+                User user = new User(null, request.getName(), request.getEmail());
 
                 User savedUser = userRepository.save(user);
 
-                return new ApiResponse<>(
-                                true,
-                                201,
-                                "Berhasil membuat user",
-                                savedUser);
+                return new ApiResponse<>(true, 201, "Berhasil membuat user", savedUser);
         }
 
         // PUT /users/{id}
-        public ApiResponse<User> update(
-                        Long id,
-                        UserRequest request) {
+        public ApiResponse<User> update(Long id, UserRequest request) {
 
                 userValidator.validate(request);
 
-                User updatedUser = userRepository.update(
-                                id,
-                                request.getName(),
-                                request.getEmail());
+                User updatedUser = userRepository.update(id, request.getName(), request.getEmail());
 
                 if (updatedUser == null) {
 
-                        return new ApiResponse<>(
-                                        false,
-                                        404,
-                                        "User tidak ditemukan",
-                                        null);
+                        return new ApiResponse<>(false, 404, "User tidak ditemukan", null);
                 }
 
-                return new ApiResponse<>(
-                                true,
-                                200,
-                                "Berhasil memperbarui user",
-                                updatedUser);
+                return new ApiResponse<>(true, 200, "Berhasil memperbarui user", updatedUser);
         }
 
         // DELETE /users/{id}
-        public ApiResponse<Void> delete(
-                        Long id) {
+        public ApiResponse<Void> delete(Long id) {
 
                 boolean deleted = userRepository.delete(id);
 
                 if (!deleted) {
 
-                        return new ApiResponse<>(
-                                        false,
-                                        404,
-                                        "User tidak ditemukan",
-                                        null);
+                        return new ApiResponse<>(false, 404, "User tidak ditemukan", null);
                 }
 
-                return new ApiResponse<>(
-                                true,
-                                200,
-                                "Berhasil menghapus user",
-                                null);
+                return new ApiResponse<>(true, 200, "Berhasil menghapus user", null);
         }
 }

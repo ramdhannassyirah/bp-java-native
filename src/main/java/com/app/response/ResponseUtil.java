@@ -29,18 +29,15 @@ public class ResponseUtil {
                                 StandardCharsets.UTF_8);
 
                 // Set Content-Type
-                exchange.getResponseHeaders()
-                                .set("Content-Type", "application/json");
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
 
                 // Kirim HTTP status
                 exchange.sendResponseHeaders(statusCode, responseBytes.length);
 
                 // Kirim body
-                exchange.getResponseBody()
-                                .write(responseBytes);
+                exchange.getResponseBody().write(responseBytes);
 
                 // Tutup response
-                exchange.getResponseBody()
-                                .close();
+                exchange.getResponseBody().close();
         }
 }

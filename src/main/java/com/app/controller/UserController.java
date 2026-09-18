@@ -21,22 +21,28 @@ public class UserController {
         public ApiResponse<Pagination<User>> findAll(Request request) {
 
                 String pageParam = request.query("page");
+
                 String limitParam = request.query("limit");
+
+                String search = request.query("search");
 
                 int page = 1;
                 int limit = 10;
 
                 if (pageParam != null) {
-
                         page = Integer.parseInt(pageParam);
                 }
 
                 if (limitParam != null) {
-
                         limit = Integer.parseInt(limitParam);
                 }
 
                 paginationValidator.validate(page, limit);
+
+                if (search != null && !search.isBlank()) {
+
+                        return userService.search(search, page, limit);
+                }
 
                 return userService.findAll(page, limit);
         }
