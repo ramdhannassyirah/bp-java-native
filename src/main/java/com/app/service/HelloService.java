@@ -15,6 +15,7 @@ public class HelloService {
 
         return new ApiResponse<>(
                 true,
+                200,
                 "Berhasil mengambil data",
                 data
         );
@@ -31,7 +32,8 @@ public class HelloService {
 
         return new ApiResponse<>(
                 true,
-                "Berhasil menerima data",
+                201,
+                "Berhasil membuat data",
                 data
         );
     }
@@ -45,7 +47,8 @@ public class HelloService {
 
         return new ApiResponse<>(
                 true,
-                "Berhasil melakukan PUT",
+                200,
+                "Berhasil memperbarui data",
                 data
         );
     }
@@ -59,7 +62,8 @@ public class HelloService {
 
         return new ApiResponse<>(
                 true,
-                "Berhasil melakukan DELETE",
+                200,
+                "Berhasil menghapus data",
                 data
         );
     }

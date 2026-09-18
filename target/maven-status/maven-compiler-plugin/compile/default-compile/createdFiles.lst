@@ -6,6 +6,7 @@ com/app/service/HelloService.class
 com/app/validation/HelloValidator.class
 com/app/model/HelloRequest.class
 com/app/model/HelloResponse.class
+com/app/response/ResponseUtil.class
 com/app/controller/HelloController.class
 com/app/server/Router.class
 com/app/server/Handler.class

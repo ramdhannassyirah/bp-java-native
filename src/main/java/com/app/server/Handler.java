@@ -3,6 +3,8 @@ package com.app.server;
 import com.app.controller.HelloController;
 import com.app.exception.ValidationException;
 import com.app.model.HelloRequest;
+import com.app.response.ApiResponse;
+import com.app.response.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -53,31 +55,61 @@ public class Handler implements HttpHandler {
             HttpExchange exchange
     ) throws IOException {
 
-        String method = exchange.getRequestMethod();
-        String path = exchange.getRequestURI().getPath();
+        String method =
+                exchange.getRequestMethod();
+
+        String path =
+                exchange.getRequestURI().getPath();
 
         Object response;
 
-        if (path.equals("/hello") && method.equals("GET")) {
+        // =========================
+        // GET /hello
+        // =========================
+        if (path.equals("/hello")
+                && method.equals("GET")) {
 
-            response = helloController.getHello();
+            response =
+                    helloController.getHello();
+        }
 
-        } else if (path.equals("/hello") && method.equals("POST")) {
+        // =========================
+        // POST /hello
+        // =========================
+        else if (path.equals("/hello")
+                && method.equals("POST")) {
 
             HelloRequest request =
                     readRequestBody(exchange);
 
-            response = helloController.postHello(request);
+            response =
+                    helloController.postHello(request);
+        }
 
-        } else if (path.equals("/hello") && method.equals("PUT")) {
+        // =========================
+        // PUT /hello
+        // =========================
+        else if (path.equals("/hello")
+                && method.equals("PUT")) {
 
-            response = helloController.putHello();
+            response =
+                    helloController.putHello();
+        }
 
-        } else if (path.equals("/hello") && method.equals("DELETE")) {
+        // =========================
+        // DELETE /hello
+        // =========================
+        else if (path.equals("/hello")
+                && method.equals("DELETE")) {
 
-            response = helloController.deleteHello();
+            response =
+                    helloController.deleteHello();
+        }
 
-        } else {
+        // =========================
+        // ROUTE NOT FOUND
+        // =========================
+        else {
 
             sendError(
                     exchange,
@@ -88,16 +120,16 @@ public class Handler implements HttpHandler {
             return;
         }
 
-        String jsonResponse =
-                objectMapper.writeValueAsString(response);
-
-        sendResponse(
+        // Kirim response
+        ResponseUtil.send(
                 exchange,
-                200,
-                jsonResponse
+                response
         );
     }
 
+    // ==================================================
+    // Membaca JSON Request Body
+    // ==================================================
     private HelloRequest readRequestBody(
             HttpExchange exchange
     ) throws IOException {
@@ -117,51 +149,26 @@ public class Handler implements HttpHandler {
         );
     }
 
+    // ==================================================
+    // Error Response
+    // ==================================================
     private void sendError(
             HttpExchange exchange,
             int statusCode,
             String message
     ) throws IOException {
 
-        String response = """
-                {
-                    "success": false,
-                    "message": "%s",
-                    "data": null
-                }
-                """.formatted(message);
-
-        sendResponse(
-                exchange,
-                statusCode,
-                response
-        );
-    }
-
-    private void sendResponse(
-            HttpExchange exchange,
-            int statusCode,
-            String response
-    ) throws IOException {
-
-        byte[] responseBytes =
-                response.getBytes(StandardCharsets.UTF_8);
-
-        exchange.getResponseHeaders()
-                .set(
-                        "Content-Type",
-                        "application/json"
+        ApiResponse<Void> response =
+                new ApiResponse<>(
+                        false,
+                        statusCode,
+                        message,
+                        null
                 );
 
-        exchange.sendResponseHeaders(
-                statusCode,
-                responseBytes.length
+        ResponseUtil.send(
+                exchange,
+                response
         );
-
-        exchange.getResponseBody()
-                .write(responseBytes);
-
-        exchange.getResponseBody()
-                .close();
     }
 }
