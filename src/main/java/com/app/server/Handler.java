@@ -1,11 +1,13 @@
 package com.app.server;
 
 import com.app.controller.HelloController;
+import com.app.model.HelloRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 public class Handler implements HttpHandler {
@@ -33,7 +35,10 @@ public class Handler implements HttpHandler {
 
         } else if (path.equals("/hello") && method.equals("POST")) {
 
-            response = helloController.postHello();
+            HelloRequest request =
+                    readRequestBody(exchange);
+
+            response = helloController.postHello(request);
 
         } else if (path.equals("/hello") && method.equals("PUT")) {
 
@@ -45,13 +50,15 @@ public class Handler implements HttpHandler {
 
         } else {
 
-            response = """
+            String errorResponse = """
                     {
-                        "message": "Route not found"
+                        "success": false,
+                        "message": "Route not found",
+                        "data": null
                     }
                     """;
 
-            sendResponse(exchange, 404, response.toString());
+            sendResponse(exchange, 404, errorResponse);
 
             return;
         }
@@ -60,6 +67,25 @@ public class Handler implements HttpHandler {
                 objectMapper.writeValueAsString(response);
 
         sendResponse(exchange, 200, jsonResponse);
+    }
+    
+    private HelloRequest readRequestBody(
+            HttpExchange exchange
+    ) throws IOException {
+
+        InputStream inputStream =
+                exchange.getRequestBody();
+
+        String requestBody =
+                new String(
+                        inputStream.readAllBytes(),
+                        StandardCharsets.UTF_8
+                );
+
+        return objectMapper.readValue(
+                requestBody,
+                HelloRequest.class
+        );
     }
 
     private void sendResponse(

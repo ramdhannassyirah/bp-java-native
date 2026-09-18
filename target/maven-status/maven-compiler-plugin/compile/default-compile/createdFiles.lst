@@ -2,6 +2,7 @@ com/app/App.class
 com/app/response/ApiResponse.class
 com/app/server/HttpServerApp.class
 com/app/service/HelloService.class
+com/app/model/HelloRequest.class
 com/app/model/HelloResponse.class
 com/app/controller/HelloController.class
 com/app/server/Router.class

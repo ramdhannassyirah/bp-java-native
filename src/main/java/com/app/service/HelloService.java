@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.model.HelloRequest;
 import com.app.model.HelloResponse;
 import com.app.response.ApiResponse;
 
@@ -19,16 +20,18 @@ public class HelloService {
         );
     }
 
-    public ApiResponse<HelloResponse> postHello() {
+    public ApiResponse<HelloResponse> postHello(
+            HelloRequest request
+    ) {
 
         HelloResponse data =
                 new HelloResponse(
-                        "POST Hello from Service"
+                        request.getMessage()
                 );
 
         return new ApiResponse<>(
                 true,
-                "Berhasil melakukan POST",
+                "Berhasil menerima data",
                 data
         );
     }

@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import com.app.model.HelloRequest;
 import com.app.model.HelloResponse;
 import com.app.response.ApiResponse;
 import com.app.service.HelloService;
@@ -18,9 +19,11 @@ public class HelloController {
         return helloService.getHello();
     }
 
-    public ApiResponse<HelloResponse> postHello() {
+    public ApiResponse<HelloResponse> postHello(
+            HelloRequest request
+    ) {
 
-        return helloService.postHello();
+        return helloService.postHello(request);
     }
 
     public ApiResponse<HelloResponse> putHello() {

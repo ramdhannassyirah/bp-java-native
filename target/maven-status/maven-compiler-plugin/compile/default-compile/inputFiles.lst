@@ -1,5 +1,6 @@
 /home/dun/projects/java-native-api/src/main/java/com/app/App.java
 /home/dun/projects/java-native-api/src/main/java/com/app/controller/HelloController.java
+/home/dun/projects/java-native-api/src/main/java/com/app/model/HelloRequest.java
 /home/dun/projects/java-native-api/src/main/java/com/app/model/HelloResponse.java
 /home/dun/projects/java-native-api/src/main/java/com/app/response/ApiResponse.java
 /home/dun/projects/java-native-api/src/main/java/com/app/server/Handler.java
