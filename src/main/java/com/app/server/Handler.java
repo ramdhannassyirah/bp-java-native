@@ -1,5 +1,6 @@
 package com.app.server;
 
+import com.app.controller.HelloController;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -7,6 +8,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class Handler implements HttpHandler {
+
+    private final HelloController helloController;
+
+    public Handler() {
+
+        this.helloController = new HelloController();
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -16,45 +24,21 @@ public class Handler implements HttpHandler {
 
         String response;
 
-        if (path.equals("/") && method.equals("GET")) {
+        if (path.equals("/hello") && method.equals("GET")) {
 
-            response = """
-                    {
-                        "message": "Java Native API is running"
-                    }
-                    """;
-
-        } else if (path.equals("/hello") && method.equals("GET")) {
-
-            response = """
-                    {
-                        "message": "Hello from GET"
-                    }
-                    """;
+            response = helloController.getHello();
 
         } else if (path.equals("/hello") && method.equals("POST")) {
 
-            response = """
-                    {
-                        "message": "Hello from POST"
-                    }
-                    """;
+            response = helloController.postHello();
 
         } else if (path.equals("/hello") && method.equals("PUT")) {
 
-            response = """
-                    {
-                        "message": "Hello from PUT"
-                    }
-                    """;
+            response = helloController.putHello();
 
         } else if (path.equals("/hello") && method.equals("DELETE")) {
 
-            response = """
-                    {
-                        "message": "Hello from DELETE"
-                    }
-                    """;
+            response = helloController.deleteHello();
 
         } else {
 
@@ -65,6 +49,7 @@ public class Handler implements HttpHandler {
                     """;
 
             sendResponse(exchange, 404, response);
+
             return;
         }
 
